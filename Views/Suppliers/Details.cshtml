@@ -1,0 +1,294 @@
+﻿@model InventorySalesDashboard.Models.Supplier
+
+@{
+    ViewData["Title"] = "Supplier Details";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="page-title mb-1">🏢 Supplier Details</h1>
+            <p class="text-muted mb-0">Complete information about @Model.Name</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a asp-action="Index" class="btn btn-outline-secondary btn-modern">
+                <i class="fas fa-arrow-left me-2"></i>Back to Suppliers
+            </a>
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary btn-modern">
+                <i class="fas fa-edit me-2"></i>Edit Supplier
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Left Column - Supplier Information -->
+        <div class="col-lg-8">
+            <!-- Basic Information Card -->
+            <div class="modern-card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-info-circle me-2 text-primary"></i>
+                        Basic Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold text-muted">Supplier Name</label>
+                            <div class="fs-4 fw-bold">@Model.Name</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold text-muted">Supplier ID</label>
+                            <div class="fs-5">
+                                <code class="bg-light rounded px-2 py-1">SUP-@Model.Id.ToString("D4")</code>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model.Address))
+                    {
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <label class="form-label fw-semibold text-muted">Address</label>
+                                <div class="p-3 bg-light rounded">
+                                    <i class="fas fa-map-marker-alt me-2 text-muted"></i>
+                                    @Model.Address
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Contact Information Card -->
+            <div class="modern-card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-address-book me-2 text-success"></i>
+                        Contact Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        @if (!string.IsNullOrEmpty(Model.Email))
+                        {
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-semibold text-muted">Email Address</label>
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-envelope me-3 text-primary fs-5"></i>
+                                    <div>
+                                        <a href="mailto:@Model.Email" class="text-decoration-none fs-5">@Model.Email</a>
+                                        <br>
+                                        <small class="text-muted">Click to send email</small>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                        @if (!string.IsNullOrEmpty(Model.Phone))
+                        {
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-semibold text-muted">Phone Number</label>
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-phone me-3 text-success fs-5"></i>
+                                    <div>
+                                        <a href="tel:@Model.Phone" class="text-decoration-none fs-5">@Model.Phone</a>
+                                        <br>
+                                        <small class="text-muted">Click to call</small>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    @if (string.IsNullOrEmpty(Model.Email) && string.IsNullOrEmpty(Model.Phone))
+                    {
+                        <div class="text-center py-4">
+                            <i class="fas fa-exclamation-triangle text-warning mb-3" style="font-size: 3rem;"></i>
+                            <h5 class="text-warning">No Contact Information</h5>
+                            <p class="text-muted">Add email and phone number for better communication</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column - Statistics & Actions -->
+        <div class="col-lg-4">
+            <!-- Supplier Statistics Card -->
+            <div class="modern-card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-bar me-2 text-info"></i>
+                        Supplier Statistics
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <div class="fs-1 fw-bold text-primary">
+                            @(Model.Products?.Count ?? 0)
+                        </div>
+                        <div class="text-muted">Products Supplied</div>
+                    </div>
+
+                    <div class="row text-center">
+                        <div class="col-6">
+                            @{
+                                var inStockCount = Model.Products?.Count(p => p.StockQuantity > p.ReorderLevel) ?? 0;
+                                var lowStockCount = Model.Products?.Count(p => p.StockQuantity <= p.ReorderLevel && p.StockQuantity > 0) ?? 0;
+                                var outOfStockCount = Model.Products?.Count(p => p.StockQuantity == 0) ?? 0;
+                            }
+                            <div class="fw-bold fs-4 text-success">@inStockCount</div>
+                            <small class="text-muted">In Stock</small>
+                        </div>
+                        <div class="col-6">
+                            <div class="fw-bold fs-4 text-warning">@lowStockCount</div>
+                            <small class="text-muted">Low Stock</small>
+                        </div>
+                    </div>
+
+                    <div class="mt-3">
+                        <div class="progress" style="height: 8px;">
+                            <div class="progress-bar bg-success" style="width: @(Model.Products?.Count > 0 ? (inStockCount * 100 / Model.Products.Count) : 0)%"></div>
+                            <div class="progress-bar bg-warning" style="width: @(Model.Products?.Count > 0 ? (lowStockCount * 100 / Model.Products.Count) : 0)%"></div>
+                            <div class="progress-bar bg-danger" style="width: @(Model.Products?.Count > 0 ? (outOfStockCount * 100 / Model.Products.Count) : 0)%"></div>
+                        </div>
+                        <small class="text-muted">Stock distribution</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions Card -->
+            <div class="modern-card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-bolt me-2 text-warning"></i>
+                        Quick Actions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a asp-controller="Products" asp-action="Create" class="btn btn-primary btn-modern">
+                            <i class="fas fa-plus me-2"></i>Add Product
+                        </a>
+                        <a href="mailto:@Model.Email" class="btn btn-success btn-modern @(string.IsNullOrEmpty(Model.Email) ? "disabled" : "")">
+                            <i class="fas fa-envelope me-2"></i>Send Email
+                        </a>
+                        <a href="tel:@Model.Phone" class="btn btn-info btn-modern @(string.IsNullOrEmpty(Model.Phone) ? "disabled" : "")">
+                            <i class="fas fa-phone me-2"></i>Make Call
+                        </a>
+                        <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger btn-modern">
+                            <i class="fas fa-trash me-2"></i>Delete Supplier
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Products from this Supplier -->
+    @if (Model.Products != null && Model.Products.Any())
+    {
+        <div class="modern-card mt-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-boxes me-2 text-primary"></i>
+                    Products from this Supplier
+                </h5>
+                <span class="badge bg-primary fs-6">@Model.Products.Count products</span>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table modern-table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>SKU</th>
+                                <th>Price</th>
+                                <th>Stock</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var product in Model.Products)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            @if (!string.IsNullOrEmpty(product.ImageUrl))
+                                            {
+                                                <img src="@product.ImageUrl" alt="@product.Name"
+                                                     class="rounded me-3" style="width: 40px; height: 40px; object-fit: cover;">
+                                            }
+                                            <div>
+                                                <div class="fw-semibold">@product.Name</div>
+                                                <small class="text-muted">@product.Category</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <code class="bg-light rounded px-2 py-1">@product.SKU</code>
+                                    </td>
+                                    <td class="fw-semibold text-success">@product.Price.ToString("C")</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="progress flex-grow-1 me-2" style="height: 6px;">
+                                                @{
+                                                    var productProgress = product.StockQuantity == 0 ? 0 :
+                                                    (double)product.StockQuantity / (product.ReorderLevel * 2) * 100;
+                                                    productProgress = Math.Min(productProgress, 100);
+
+                                                    string productProgressClass = "bg-success";
+                                                    if (product.StockQuantity == 0)
+                                                        productProgressClass = "bg-danger";
+                                                    else if (product.StockQuantity <= product.ReorderLevel)
+                                                        productProgressClass = "bg-warning";
+                                                }
+                                                <div class="progress-bar @productProgressClass" style="width: @productProgress%"></div>
+                                            </div>
+                                            <span class="fw-medium">@product.StockQuantity</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        @if (product.StockQuantity == 0)
+                                        {
+                                            <span class="badge bg-danger">Out of Stock</span>
+                                        }
+                                        else if (product.StockQuantity <= product.ReorderLevel)
+                                        {
+                                            <span class="badge bg-warning">Low Stock</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-success">In Stock</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <a asp-controller="Products" asp-action="Details" asp-route-id="@product.Id"
+                                           class="btn btn-outline-info btn-sm" data-bs-toggle="tooltip" title="View Details">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="modern-card mt-4">
+            <div class="card-body text-center py-5">
+                <i class="fas fa-box-open text-muted mb-3" style="font-size: 3rem;"></i>
+                <h5 class="text-muted">No Products from this Supplier</h5>
+                <p class="text-muted">This supplier doesn't have any products associated yet.</p>
+                <a asp-controller="Products" asp-action="Create" class="btn btn-primary btn-modern">
+                    <i class="fas fa-plus me-2"></i>Add First Product
+                </a>
+            </div>
+        </div>
+    }
+</div>

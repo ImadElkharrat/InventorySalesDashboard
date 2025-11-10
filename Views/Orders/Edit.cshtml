@@ -1,0 +1,273 @@
+﻿@model InventorySalesDashboard.Models.Order
+
+@{
+    ViewData["Title"] = "Edit Order";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="page-title mb-1">✏️ Edit Order</h1>
+            <p class="text-muted mb-0">Update order information and items</p>
+        </div>
+        <div>
+            <a asp-action="Index" class="btn btn-outline-secondary btn-modern">
+                <i class="fas fa-arrow-left me-2"></i>Back to Orders
+            </a>
+        </div>
+    </div>
+
+    <div class="modern-card">
+        <div class="card-header">
+            <h5 class="mb-0">
+                <i class="fas fa-edit me-2 text-primary"></i>
+                Edit Order #@Model.Id
+            </h5>
+        </div>
+
+        <form asp-action="Edit" class="modern-form">
+            <div class="card-body">
+                <input type="hidden" asp-for="Id" />
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                <!-- Customer Information Section -->
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <i class="fas fa-user"></i>
+                        Customer Information
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="CustomerName" class="form-label">Customer Name *</label>
+                            <input asp-for="CustomerName" class="form-control" />
+                            <span asp-validation-for="CustomerName" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Order Date</label>
+                            <input type="text" class="form-control" value="@Model.OrderDate.ToString("MMM dd, yyyy HH:mm")" disabled />
+                            <small class="form-text text-muted">Order date cannot be modified</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order Summary -->
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <i class="fas fa-receipt"></i>
+                        Order Summary
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Total" class="form-label">Order Total</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input asp-for="Total" class="form-control" />
+                            </div>
+                            <span asp-validation-for="Total" class="text-danger"></span>
+                            <small class="form-text text-muted">Update the total amount if needed</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Calculated Total</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="text" class="form-control"
+                                       value="@(Model.OrderLines?.Sum(ol => ol.Quantity * ol.UnitPrice) ?? 0)"
+                                       disabled />
+                            </div>
+                            <small class="form-text text-muted">Based on order items (read-only)</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order Items -->
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <i class="fas fa-list"></i>
+                        Order Items
+                    </div>
+
+                    @if (Model.OrderLines != null && Model.OrderLines.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table modern-table">
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th class="text-center">Quantity</th>
+                                        <th class="text-end">Unit Price</th>
+                                        <th class="text-end">Line Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var line in Model.OrderLines)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    @if (!string.IsNullOrEmpty(line.Product?.ImageUrl))
+                                                    {
+                                                        <img src="@line.Product.ImageUrl" alt="@line.Product.Name"
+                                                             class="rounded me-3" style="width: 40px; height: 40px; object-fit: cover;">
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="rounded bg-secondary d-flex align-items-center justify-content-center me-3"
+                                                             style="width: 40px; height: 40px;">
+                                                            <i class="fas fa-box text-light"></i>
+                                                        </div>
+                                                    }
+                                                    <div>
+                                                        <div class="fw-semibold">@line.Product?.Name</div>
+                                                        <small class="text-muted">SKU: @line.Product?.SKU</small>
+                                                        <br>
+                                                        <small class="text-muted">
+                                                            Cost: @(line.Product?.CostPrice.ToString("C") ?? "N/A") |
+                                                            Stock: @(line.Product?.StockQuantity ?? 0)
+                                                        </small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="text-center">
+                                                <span class="badge bg-primary rounded-pill fs-6">@line.Quantity</span>
+                                            </td>
+                                            <td class="text-end fw-semibold">@line.UnitPrice.ToString("C")</td>
+                                            <td class="text-end fw-bold text-success">@((line.Quantity * line.UnitPrice).ToString("C"))</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                                <tfoot>
+                                    <tr class="table-active">
+                                        <td colspan="3" class="text-end fw-bold">Order Total:</td>
+                                        <td class="text-end fw-bold fs-5 text-success">@Model.Total.ToString("C")</td>
+                                    </tr>
+                                    @{
+                                        var totalProfit = Model.OrderLines.Sum(ol => (ol.UnitPrice - (ol.Product?.CostPrice ?? 0)) * ol.Quantity);
+                                        var profitMargin = Model.Total > 0 ? (totalProfit / Model.Total) * 100 : 0;
+                                    }
+                                    <tr class="table-active">
+                                        <td colspan="3" class="text-end fw-bold">Total Profit:</td>
+                                        <td class="text-end fw-bold fs-6 @(totalProfit >= 0 ? "text-success" : "text-danger")">
+                                            @totalProfit.ToString("C") (@profitMargin.ToString("F1")%)
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+
+                        <!-- Order Items Summary -->
+                        <div class="row mt-3">
+                            <div class="col-md-3 text-center">
+                                <div class="metric-card">
+                                    <div class="metric-value">@Model.OrderLines.Count</div>
+                                    <div class="metric-label">Items</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 text-center">
+                                <div class="metric-card">
+                                    <div class="metric-value">@Model.OrderLines.Sum(ol => ol.Quantity)</div>
+                                    <div class="metric-label">Total Qty</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 text-center">
+                                @{
+                                    var avgPrice = Model.OrderLines.Average(ol => ol.UnitPrice);
+                                }
+                                <div class="metric-card">
+                                    <div class="metric-value">@avgPrice.ToString("C")</div>
+                                    <div class="metric-label">Avg Price</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 text-center">
+                                <div class="metric-card">
+                                    <div class="metric-value @(totalProfit >= 0 ? "text-success" : "text-danger")">@totalProfit.ToString("C")</div>
+                                    <div class="metric-label">Profit</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info mt-3">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Note:</strong> To modify order items, you may need to delete and recreate this order.
+                            Individual line items cannot be edited in this view.
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info">
+                            <div class="text-center py-4">
+                                <i class="fas fa-shopping-cart text-muted mb-3" style="font-size: 3rem;"></i>
+                                <h5 class="text-muted">No items in this order</h5>
+                                <p class="text-muted">This order doesn't contain any items.</p>
+                                <a asp-controller="Orders" asp-action="Create" class="btn btn-primary btn-modern">
+                                    <i class="fas fa-plus me-2"></i>Create New Order with Items
+                                </a>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <!-- Order Notes -->
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <i class="fas fa-sticky-note"></i>
+                        Order Notes
+                    </div>
+                    <div class="row">
+                        <div class="col-12 mb-3">
+                            <label class="form-label">Additional Notes</label>
+                            <textarea class="form-control form-textarea" rows="3"
+                                      placeholder="Add any additional notes about this order..."></textarea>
+                            <small class="form-text text-muted">Optional notes for internal reference</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <a asp-action="Index" class="btn btn-outline-secondary btn-modern">
+                    <i class="fas fa-times me-2"></i>Cancel
+                </a>
+                <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-info btn-modern">
+                    <i class="fas fa-eye me-2"></i>View Details
+                </a>
+                <a asp-action="GenerateInvoice" asp-route-id="@Model.Id" class="btn btn-success btn-modern">
+                    <i class="fas fa-file-pdf me-2"></i>Download Invoice
+                </a>
+                <button type="submit" class="btn btn-primary btn-modern">
+                    <i class="fas fa-save me-2"></i>Update Order
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add confirmation for total amount changes
+            const totalInput = document.querySelector('#Total');
+            const calculatedTotal = @(Model.OrderLines?.Sum(ol => ol.Quantity * ol.UnitPrice) ?? 0);
+
+            if (totalInput) {
+                totalInput.addEventListener('change', function() {
+                    const newTotal = parseFloat(this.value) || 0;
+                    if (Math.abs(newTotal - calculatedTotal) > 0.01) {
+                        const difference = newTotal - calculatedTotal;
+                        const message = difference > 0 ?
+                            `You're increasing the total by $${Math.abs(difference).toFixed(2)}.` :
+                            `You're decreasing the total by $${Math.abs(difference).toFixed(2)}.`;
+
+                        if (!confirm(`${message}\n\nAre you sure you want to change the order total?`)) {
+                            this.value = calculatedTotal.toFixed(2);
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+}

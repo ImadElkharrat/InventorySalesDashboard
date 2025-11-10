@@ -1,0 +1,236 @@
+﻿@model InventorySalesDashboard.Models.Order
+
+@{
+    ViewData["Title"] = "Create Order";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="page-title mb-1">🛒 Create New Order</h1>
+            <p class="text-muted mb-0">Create a new sales order and manage inventory</p>
+        </div>
+        <div>
+            <a asp-action="Index" class="btn btn-outline-secondary btn-modern">
+                <i class="fas fa-arrow-left me-2"></i>Back to Orders
+            </a>
+        </div>
+    </div>
+
+    <div class="modern-card">
+        <div class="card-header">
+            <h5 class="mb-0">
+                <i class="fas fa-plus-circle me-2 text-primary"></i>
+                Order Information
+            </h5>
+        </div>
+
+        <form asp-action="Create" class="modern-form" id="orderForm">
+            <div class="card-body">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                <!-- Customer Information Section -->
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <i class="fas fa-user"></i>
+                        Customer Information
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="CustomerName" class="form-label">Customer Name *</label>
+                            <input asp-for="CustomerName" class="form-control" placeholder="Enter customer name" />
+                            <span asp-validation-for="CustomerName" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Order Date</label>
+                            <input type="text" class="form-control" value="@DateTime.Now.ToString("MMM dd, yyyy HH:mm")" disabled />
+                            <small class="form-text text-muted">Auto-generated</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order Items Section -->
+                <div class="form-section">
+                    <div class="form-section-title d-flex justify-content-between align-items-center">
+                        <div>
+                            <i class="fas fa-shopping-cart"></i>
+                            Order Items
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="addOrderLine()">
+                            <i class="fas fa-plus me-1"></i>Add Item
+                        </button>
+                    </div>
+
+                    <div id="orderLines">
+                        <!-- Order lines will be added here dynamically -->
+                        <div class="order-line mb-3 p-3 border rounded">
+                            <div class="row">
+                                <div class="col-md-5 mb-2">
+                                    <label class="form-label">Product</label>
+                                    <select name="productIds" class="form-select product-select" onchange="updatePrice(this)">
+                                        <option value="">-- Select Product --</option>
+                                        @foreach (var product in ViewBag.Products)
+                                        {
+                                            <option value="@product.Id" data-price="@product.Price">@product.Name - Stock: @product.StockQuantity</option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="col-md-2 mb-2">
+                                    <label class="form-label">Quantity</label>
+                                    <input type="number" name="quantities" class="form-control quantity" value="1" min="1" onchange="calculateLineTotal(this)" />
+                                </div>
+                                <div class="col-md-2 mb-2">
+                                    <label class="form-label">Unit Price</label>
+                                    <input type="number" name="prices" class="form-control price" step="0.01" onchange="calculateLineTotal(this)" />
+                                </div>
+                                <div class="col-md-2 mb-2">
+                                    <label class="form-label">Total</label>
+                                    <input type="text" class="form-control line-total" disabled />
+                                </div>
+                                <div class="col-md-1 mb-2 d-flex align-items-end">
+                                    <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeOrderLine(this)">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Order Summary -->
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <textarea class="form-control" placeholder="Add order notes..." style="height: 100px"></textarea>
+                                <label>Order Notes</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="border rounded p-3">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="fw-medium">Subtotal:</span>
+                                    <span id="subtotal">$0.00</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="fw-medium">Tax (10%):</span>
+                                    <span id="tax">$0.00</span>
+                                </div>
+                                <hr>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="fw-bold">Grand Total:</span>
+                                    <span class="fw-bold text-success" id="grandTotal">$0.00</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <a asp-action="Index" class="btn btn-outline-secondary btn-modern">
+                    <i class="fas fa-times me-2"></i>Cancel
+                </a>
+                <button type="submit" class="btn btn-primary btn-modern">
+                    <i class="fas fa-save me-2"></i>Create Order
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        let lineCounter = 1;
+
+        function addOrderLine() {
+            lineCounter++;
+            const newLine = `
+                <div class="order-line mb-3 p-3 border rounded">
+                    <div class="row">
+                        <div class="col-md-5 mb-2">
+                            <label class="form-label">Product</label>
+                            <select name="productIds" class="form-select product-select" onchange="updatePrice(this)">
+                                <option value="">-- Select Product --</option>
+                                @foreach (var product in ViewBag.Products)
+                                {
+                                        <option value="@product.Id" data-price="@product.Price">@product.Name - Stock: @product.StockQuantity</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-2 mb-2">
+                            <label class="form-label">Quantity</label>
+                            <input type="number" name="quantities" class="form-control quantity" value="1" min="1" onchange="calculateLineTotal(this)" />
+                        </div>
+                        <div class="col-md-2 mb-2">
+                            <label class="form-label">Unit Price</label>
+                            <input type="number" name="prices" class="form-control price" step="0.01" onchange="calculateLineTotal(this)" />
+                        </div>
+                        <div class="col-md-2 mb-2">
+                            <label class="form-label">Total</label>
+                            <input type="text" class="form-control line-total" disabled />
+                        </div>
+                        <div class="col-md-1 mb-2 d-flex align-items-end">
+                            <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeOrderLine(this)">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('orderLines').insertAdjacentHTML('beforeend', newLine);
+        }
+
+        function removeOrderLine(button) {
+            if (document.querySelectorAll('.order-line').length > 1) {
+                button.closest('.order-line').remove();
+                calculateOrderTotal();
+            } else {
+                alert('At least one order line is required.');
+            }
+        }
+
+        function updatePrice(select) {
+            const price = select.options[select.selectedIndex].getAttribute('data-price');
+            const priceInput = select.closest('.order-line').querySelector('.price');
+            if (price) {
+                priceInput.value = parseFloat(price).toFixed(2);
+                calculateLineTotal(priceInput);
+            }
+        }
+
+        function calculateLineTotal(input) {
+            const line = input.closest('.order-line');
+            const quantity = parseFloat(line.querySelector('.quantity').value) || 0;
+            const price = parseFloat(line.querySelector('.price').value) || 0;
+            const total = quantity * price;
+
+            line.querySelector('.line-total').value = '$' + total.toFixed(2);
+            calculateOrderTotal();
+        }
+
+        function calculateOrderTotal() {
+            let subtotal = 0;
+            document.querySelectorAll('.order-line').forEach(line => {
+                const quantity = parseFloat(line.querySelector('.quantity').value) || 0;
+                const price = parseFloat(line.querySelector('.price').value) || 0;
+                subtotal += quantity * price;
+            });
+
+            const tax = subtotal * 0.1; // 10% tax
+            const grandTotal = subtotal + tax;
+
+            document.getElementById('subtotal').textContent = '$' + subtotal.toFixed(2);
+            document.getElementById('tax').textContent = '$' + tax.toFixed(2);
+            document.getElementById('grandTotal').textContent = '$' + grandTotal.toFixed(2);
+        }
+
+        // Initialize calculations
+        document.addEventListener('DOMContentLoaded', function() {
+            calculateOrderTotal();
+        });
+    </script>
+}

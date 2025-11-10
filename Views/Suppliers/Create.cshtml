@@ -1,0 +1,110 @@
+﻿@model InventorySalesDashboard.Models.Supplier
+
+@{
+    ViewData["Title"] = "Create Supplier";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="page-title mb-1">🏢 Add New Supplier</h1>
+            <p class="text-muted mb-0">Add a new supplier to your supply chain</p>
+        </div>
+        <div>
+            <a asp-action="Index" class="btn btn-outline-secondary btn-modern">
+                <i class="fas fa-arrow-left me-2"></i>Back to Suppliers
+            </a>
+        </div>
+    </div>
+
+    <div class="modern-card">
+        <div class="card-header">
+            <h5 class="mb-0">
+                <i class="fas fa-plus-circle me-2 text-primary"></i>
+                Supplier Information
+            </h5>
+        </div>
+
+        <form asp-action="Create" class="modern-form">
+            <div class="card-body">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                <!-- Basic Information Section -->
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <i class="fas fa-info-circle"></i>
+                        Basic Information
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Name" class="form-label">Supplier Name *</label>
+                            <input asp-for="Name" class="form-control" placeholder="Enter supplier company name" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Information Section -->
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <i class="fas fa-address-book"></i>
+                        Contact Information
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Email" class="form-label">Email Address</label>
+                            <input asp-for="Email" type="email" class="form-control" placeholder="supplier@company.com" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Phone" class="form-label">Phone Number</label>
+                            <input asp-for="Phone" class="form-control" placeholder="+1 (555) 123-4567" />
+                            <span asp-validation-for="Phone" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12 mb-3">
+                            <label asp-for="Address" class="form-label">Address</label>
+                            <textarea asp-for="Address" class="form-control form-textarea"
+                                      placeholder="Enter full address" rows="3"></textarea>
+                            <span asp-validation-for="Address" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Additional Information Section -->
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <i class="fas fa-star"></i>
+                        Additional Information
+                    </div>
+                    <div class="row">
+                        <div class="col-12 mb-3">
+                            <div class="alert alert-info">
+                                <i class="fas fa-lightbulb me-2"></i>
+                                <strong>Pro Tip:</strong> Complete supplier information helps in better inventory management and communication.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <a asp-action="Index" class="btn btn-outline-secondary btn-modern">
+                    <i class="fas fa-times me-2"></i>Cancel
+                </a>
+                <button type="submit" class="btn btn-primary btn-modern">
+                    <i class="fas fa-save me-2"></i>Create Supplier
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

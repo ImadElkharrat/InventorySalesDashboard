@@ -1,0 +1,79 @@
+﻿@model SalesReportViewModel
+
+<h2>💰 Sales Report</h2>
+
+<form method="get" class="row g-3 mb-4">
+    <div class="col-md-4">
+        <label for="startDate" class="form-label">Start Date</label>
+        <input type="date" class="form-control" id="startDate" name="startDate" value="@Model.StartDate.ToString("yyyy-MM-dd")">
+    </div>
+    <div class="col-md-4">
+        <label for="endDate" class="form-label">End Date</label>
+        <input type="date" class="form-control" id="endDate" name="endDate" value="@Model.EndDate.ToString("yyyy-MM-dd")">
+    </div>
+    <div class="col-md-4 d-flex align-items-end">
+        <button type="submit" class="btn btn-primary">Generate Report</button>
+    </div>
+</form>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <h5 class="card-title">Total Orders</h5>
+                <p class="card-text display-6">@Model.TotalOrders</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <h5 class="card-title">Total Revenue</h5>
+                <p class="card-text display-6">@Model.TotalRevenue.ToString("C")</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <h5 class="card-title">Total Profit</h5>
+                <p class="card-text display-6">@Model.TotalProfit.ToString("C")</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-warning text-dark">
+            <div class="card-body">
+                <h5 class="card-title">Profit Margin</h5>
+                <p class="card-text display-6">@((Model.TotalRevenue > 0 ? (Model.TotalProfit / Model.TotalRevenue) * 100 : 0).ToString("F1"))%</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Order ID</th>
+            <th>Date</th>
+            <th>Customer</th>
+            <th>Items</th>
+            <th>Total</th>
+            <th>Profit</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var order in Model.Orders)
+        {
+            var orderProfit = order.OrderLines.Sum(ol => (ol.UnitPrice - (ol.Product?.CostPrice ?? 0)) * ol.Quantity);
+            <tr>
+                <td>@order.Id</td>
+                <td>@order.OrderDate.ToString("MMM dd, yyyy")</td>
+                <td>@order.CustomerName</td>
+                <td>@order.OrderLines.Sum(ol => ol.Quantity)</td>
+                <td>@order.Total.ToString("C")</td>
+                <td class="@(orderProfit >= 0 ? "text-success" : "text-danger")">@orderProfit.ToString("C")</td>
+            </tr>
+        }
+    </tbody>
+</table>

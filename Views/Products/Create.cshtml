@@ -1,0 +1,187 @@
+﻿@model InventorySalesDashboard.Models.Product
+
+@{
+    ViewData["Title"] = "Create Product";
+}
+
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="page-title mb-1">➕ Create New Product</h1>
+            <p class="text-muted mb-0">Add a new product to your inventory</p>
+        </div>
+        <div>
+            <a asp-action="Index" class="btn btn-outline-secondary btn-modern">
+                <i class="fas fa-arrow-left me-2"></i>Back to Products
+            </a>
+        </div>
+    </div>
+
+    <div class="modern-card">
+        <div class="card-header">
+            <h5 class="mb-0">
+                <i class="fas fa-plus-circle me-2 text-primary"></i>
+                Product Information
+            </h5>
+        </div>
+
+        <form asp-action="Create" enctype="multipart/form-data" class="modern-form">
+            <div class="card-body">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                <!-- Basic Information Section -->
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <i class="fas fa-info-circle"></i>
+                        Basic Information
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Name" class="form-label">Product Name *</label>
+                            <input asp-for="Name" class="form-control" placeholder="Enter product name" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="SKU" class="form-label">SKU *</label>
+                            <input asp-for="SKU" class="form-control" placeholder="Enter SKU (e.g., PROD001)" />
+                            <span asp-validation-for="SKU" class="text-danger"></span>
+                            <small class="form-text text-muted">Unique stock keeping unit</small>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12 mb-3">
+                            <label asp-for="Description" class="form-label">Description</label>
+                            <textarea asp-for="Description" class="form-control form-textarea"
+                                      placeholder="Enter product description" rows="3"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Category" class="form-label">Category</label>
+                            <input asp-for="Category" class="form-control" placeholder="e.g., Electronics, Clothing" />
+                            <span asp-validation-for="Category" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="SupplierId" class="form-label">Supplier</label>
+                            <select asp-for="SupplierId" class="form-select" asp-items="ViewBag.SupplierId">
+                                <option value="">-- Select Supplier --</option>
+                            </select>
+                            <span asp-validation-for="SupplierId" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pricing Section -->
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <i class="fas fa-tag"></i>
+                        Pricing Information
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Price" class="form-label">Selling Price *</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input asp-for="Price" class="form-control" placeholder="0.00" />
+                            </div>
+                            <span asp-validation-for="Price" class="text-danger"></span>
+                            <small class="form-text text-muted">Price customers will pay</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="CostPrice" class="form-label">Cost Price *</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input asp-for="CostPrice" class="form-control" placeholder="0.00" />
+                            </div>
+                            <span asp-validation-for="CostPrice" class="text-danger"></span>
+                            <small class="form-text text-muted">Your cost for this product</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Inventory Section -->
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <i class="fas fa-boxes"></i>
+                        Inventory Management
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="StockQuantity" class="form-label">Current Stock *</label>
+                            <input asp-for="StockQuantity" class="form-control" placeholder="0" />
+                            <span asp-validation-for="StockQuantity" class="text-danger"></span>
+                            <small class="form-text text-muted">Current quantity in inventory</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="ReorderLevel" class="form-label">Reorder Level *</label>
+                            <input asp-for="ReorderLevel" class="form-control" placeholder="0" />
+                            <span asp-validation-for="ReorderLevel" class="text-danger"></span>
+                            <small class="form-text text-muted">Alert when stock reaches this level</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Media Section -->
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <i class="fas fa-image"></i>
+                        Product Image
+                    </div>
+                    <div class="row">
+                        <div class="col-12 mb-3">
+                            <label class="form-label">Upload Product Image</label>
+                            <input type="file" name="imageFile" class="form-control"
+                                   accept=".jpg,.jpeg,.png,.gif,.bmp" />
+                            <small class="form-text text-muted">
+                                Max file size: 5MB. Allowed formats: JPG, PNG, GIF, BMP
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <a asp-action="Index" class="btn btn-outline-secondary btn-modern">
+                    <i class="fas fa-times me-2"></i>Cancel
+                </a>
+                <button type="submit" class="btn btn-primary btn-modern">
+                    <i class="fas fa-save me-2"></i>Create Product
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add real-time profit calculation
+            const priceInput = document.querySelector('#Price');
+            const costInput = document.querySelector('#CostPrice');
+
+            function calculateProfit() {
+                const price = parseFloat(priceInput.value) || 0;
+                const cost = parseFloat(costInput.value) || 0;
+                const profit = price - cost;
+                const margin = price > 0 ? (profit / price) * 100 : 0;
+
+                // You could display this in a separate element
+                console.log(`Profit: $${profit.toFixed(2)} | Margin: ${margin.toFixed(1)}%`);
+            }
+
+            if (priceInput && costInput) {
+                priceInput.addEventListener('input', calculateProfit);
+                costInput.addEventListener('input', calculateProfit);
+            }
+        });
+    </script>
+}

@@ -1,0 +1,87 @@
+﻿@model List<Product>
+
+@if (Model.Any())
+{
+    <div class="table-responsive">
+        <table class="table modern-table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Stock</th>
+                    <th>Status</th>
+                    <th>Supplier</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var product in Model)
+                {
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                @if (!string.IsNullOrEmpty(product.ImageUrl))
+                                {
+                                    <img src="@product.ImageUrl" alt="@product.Name"
+                                         class="rounded me-3" style="width: 40px; height: 40px; object-fit: cover;">
+                                }
+                                else
+                                {
+                                    <div class="rounded bg-secondary d-flex align-items-center justify-content-center me-3"
+                                         style="width: 40px; height: 40px;">
+                                        <i class="fas fa-box text-light" style="font-size: 0.8rem;"></i>
+                                    </div>
+                                }
+                                <div>
+                                    <div class="fw-semibold">@product.Name</div>
+                                    <small class="text-muted">@product.SKU</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="progress flex-grow-1 me-2" style="height: 6px;">
+                                    @{
+                                        var progress = product.StockQuantity == 0 ? 0 :
+                                        (double)product.StockQuantity / (product.ReorderLevel * 2) * 100;
+                                        progress = Math.Min(progress, 100);
+                                    }
+                                    <div class="progress-bar @(product.StockQuantity == 0 ? "bg-danger" :
+                                                                                                    product.StockQuantity <= product.ReorderLevel ? "bg-warning" : "bg-success")"
+                                 style="width: @progress%"></div>
+                        </div>
+                        <span class="fw-semibold @(product.StockQuantity == 0 ? "text-danger" :
+                                                                                     product.StockQuantity <= product.ReorderLevel ? "text-warning" : "text-success")">
+                            @product.StockQuantity
+                        </span>
+                    </div>
+                </td>
+                <td>
+                    @if (product.StockQuantity == 0)
+                            {
+                                <span class="badge bg-danger">Out of Stock</span>
+                            }
+                            else if (product.StockQuantity <= product.ReorderLevel)
+                            {
+                                <span class="badge bg-warning">Low Stock</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success">In Stock</span>
+                            }
+                        </td>
+                        <td>
+                            <span class="text-muted">@(product.Supplier?.Name ?? "No Supplier")</span>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <div class="text-center py-5">
+        <i class="fas fa-check-circle text-success mb-3" style="font-size: 3rem;"></i>
+        <h5 class="text-success">All products have sufficient stock!</h5>
+        <p class="text-muted">No low stock alerts at this time.</p>
+    </div>
+}

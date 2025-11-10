@@ -1,0 +1,181 @@
+﻿@model InventorySalesDashboard.Models.Product
+
+@{
+    ViewData["Title"] = "Edit Product";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="page-title mb-1">✏️ Edit Product</h1>
+            <p class="text-muted mb-0">Update product information and inventory details</p>
+        </div>
+        <div>
+            <a asp-action="Index" class="btn btn-outline-secondary btn-modern">
+                <i class="fas fa-arrow-left me-2"></i>Back to Products
+            </a>
+        </div>
+    </div>
+
+    <div class="modern-card">
+        <div class="card-header">
+            <h5 class="mb-0">
+                <i class="fas fa-edit me-2 text-primary"></i>
+                Edit Product: @Model.Name
+            </h5>
+        </div>
+
+        <form asp-action="Edit" enctype="multipart/form-data" class="modern-form">
+            <div class="card-body">
+                <input type="hidden" asp-for="Id" />
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                <!-- Current Image Preview -->
+                @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                {
+                    <div class="form-section">
+                        <div class="form-section-title">
+                            <i class="fas fa-image"></i>
+                            Current Image
+                        </div>
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <img src="@Model.ImageUrl" alt="@Model.Name"
+                                     class="img-thumbnail" style="max-width: 200px; max-height: 200px;" />
+                                <div class="form-check mt-2">
+                                    <input class="form-check-input" type="checkbox" name="removeImage" value="true" id="removeImage">
+                                    <label class="form-check-label" for="removeImage">
+                                        Remove current image
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <!-- Basic Information Section -->
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <i class="fas fa-info-circle"></i>
+                        Basic Information
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Name" class="form-label">Product Name *</label>
+                            <input asp-for="Name" class="form-control" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="SKU" class="form-label">SKU *</label>
+                            <input asp-for="SKU" class="form-control" />
+                            <span asp-validation-for="SKU" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12 mb-3">
+                            <label asp-for="Description" class="form-label">Description</label>
+                            <textarea asp-for="Description" class="form-control form-textarea" rows="3"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Category" class="form-label">Category</label>
+                            <input asp-for="Category" class="form-control" />
+                            <span asp-validation-for="Category" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="SupplierId" class="form-label">Supplier</label>
+                            <select asp-for="SupplierId" class="form-select" asp-items="ViewBag.SupplierId">
+                                <option value="">-- Select Supplier --</option>
+                            </select>
+                            <span asp-validation-for="SupplierId" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pricing Section -->
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <i class="fas fa-tag"></i>
+                        Pricing Information
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Price" class="form-label">Selling Price *</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input asp-for="Price" class="form-control" />
+                            </div>
+                            <span asp-validation-for="Price" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="CostPrice" class="form-label">Cost Price *</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input asp-for="CostPrice" class="form-control" />
+                            </div>
+                            <span asp-validation-for="CostPrice" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Inventory Section -->
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <i class="fas fa-boxes"></i>
+                        Inventory Management
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="StockQuantity" class="form-label">Current Stock *</label>
+                            <input asp-for="StockQuantity" class="form-control" />
+                            <span asp-validation-for="StockQuantity" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="ReorderLevel" class="form-label">Reorder Level *</label>
+                            <input asp-for="ReorderLevel" class="form-control" />
+                            <span asp-validation-for="ReorderLevel" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Image Upload Section -->
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <i class="fas fa-image"></i>
+                        Update Product Image
+                    </div>
+                    <div class="row">
+                        <div class="col-12 mb-3">
+                            <label class="form-label">Upload New Image</label>
+                            <input type="file" name="imageFile" class="form-control"
+                                   accept=".jpg,.jpeg,.png,.gif,.bmp" />
+                            <small class="form-text text-muted">
+                                Leave empty to keep current image. Max file size: 5MB.
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <a asp-action="Index" class="btn btn-outline-secondary btn-modern">
+                    <i class="fas fa-times me-2"></i>Cancel
+                </a>
+                <button type="submit" class="btn btn-primary btn-modern">
+                    <i class="fas fa-save me-2"></i>Update Product
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

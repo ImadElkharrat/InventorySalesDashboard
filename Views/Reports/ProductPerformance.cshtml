@@ -1,0 +1,39 @@
+﻿@model List<ProductPerformanceViewModel>
+
+<h2>🏆 Product Performance Report</h2>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Product</th>
+            <th>SKU</th>
+            <th>Units Sold</th>
+            <th>Total Revenue</th>
+            <th>Total Profit</th>
+            <th>Profit Margin</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @if (!string.IsNullOrEmpty(item.Product.ImageUrl))
+                    {
+                        <img src="@item.Product.ImageUrl" alt="@item.Product.Name" style="width: 30px; height: 30px; object-fit: cover;" class="me-2" />
+                    }
+                    @item.Product.Name
+                </td>
+                <td>@item.Product.SKU</td>
+                <td>@item.TotalSold</td>
+                <td>@item.TotalRevenue.ToString("C")</td>
+                <td class="@(item.TotalProfit >= 0 ? "text-success" : "text-danger")">@item.TotalProfit.ToString("C")</td>
+                <td>
+                    <span class="badge bg-@(item.ProfitMargin >= 30 ? "success" : item.ProfitMargin >= 15 ? "warning" : "danger")">
+                        @item.ProfitMargin.ToString("F1")%
+                    </span>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

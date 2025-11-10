@@ -1,0 +1,186 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Profile";
+    ViewData["ActivePage"] = ManageNavPages.Index;
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="page-title mb-1">👤 Profile Settings</h1>
+            <p class="text-muted mb-0">Manage your account settings and preferences</p>
+        </div>
+        <div>
+            <a asp-controller="Dashboard" asp-action="Index" class="btn btn-outline-secondary btn-modern">
+                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Left Column - Profile Information -->
+        <div class="col-lg-8">
+            <!-- Profile Form Card -->
+            <div class="modern-card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-user-edit me-2 text-primary"></i>
+                        Profile Information
+                    </h5>
+                </div>
+
+                <div class="card-body">
+                    <form id="profile-form" method="post" class="modern-form">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        <!-- Username Field -->
+                        <div class="mb-3">
+                            <label asp-for="Username" class="form-label">
+                                <i class="fas fa-user me-2 text-primary"></i>Username
+                            </label>
+                            <input asp-for="Username" class="form-control" disabled />
+                            <small class="form-text text-muted">Username cannot be changed</small>
+                        </div>
+
+                        <!-- Phone Number Field -->
+                        <div class="mb-3">
+                            <label asp-for="Input.PhoneNumber" class="form-label">
+                                <i class="fas fa-phone me-2 text-primary"></i>Phone Number
+                            </label>
+                            <input asp-for="Input.PhoneNumber" class="form-control"
+                                   placeholder="Enter your phone number" />
+                            <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+                            <small class="form-text text-muted">Optional - for account recovery</small>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="form-actions">
+                            <button id="update-profile-button" type="submit" class="btn btn-primary btn-modern">
+                                <i class="fas fa-save me-2"></i>Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Account Security Card -->
+            <div class="modern-card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-shield-alt me-2 text-warning"></i>
+                        Account Security
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center mb-3">
+                                <i class="fas fa-lock text-success me-3 fs-4"></i>
+                                <div>
+                                    <div class="fw-semibold">Password</div>
+                                    <small class="text-muted">Last changed: Recently</small>
+                                </div>
+                            </div>
+                            <a id="change-password" asp-page="./ChangePassword" class="btn btn-outline-primary btn-sm">
+                                Change Password
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center mb-3">
+                                <i class="fas fa-envelope text-info me-3 fs-4"></i>
+                                <div>
+                                    <div class="fw-semibold">Email</div>
+                                    <small class="text-muted">Verified and secure</small>
+                                </div>
+                            </div>
+                            <a id="email" asp-page="./Email" class="btn btn-outline-primary btn-sm">
+                                Change Email
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column - Account Summary -->
+        <div class="col-lg-4">
+            <!-- Account Summary Card -->
+            <div class="modern-card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-user-circle me-2 text-info"></i>
+                        Account Summary
+                    </h5>
+                </div>
+                <div class="card-body text-center">
+                    <div class="user-avatar-large mx-auto mb-3">
+                        <i class="fas fa-user"></i>
+                    </div>
+
+                    <h5 class="mb-1">@User.Identity?.Name</h5>
+                    <p class="text-muted mb-3">Administrator</p>
+
+                    <div class="account-stats">
+                        <div class="row text-center">
+                            <div class="col-6">
+                                <div class="fw-bold text-primary fs-4">@DateTime.Now.ToString("MMM")</div>
+                                <small class="text-muted">Member Since</small>
+                            </div>
+                            <div class="col-6">
+                                <div class="fw-bold text-success fs-4">Active</div>
+                                <small class="text-muted">Status</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions Card -->
+            <div class="modern-card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-bolt me-2 text-warning"></i>
+                        Quick Actions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a asp-controller="Dashboard" asp-action="Index" class="btn btn-outline-primary btn-modern">
+                            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                        </a>
+                        <a asp-controller="Products" asp-action="Index" class="btn btn-outline-success btn-modern">
+                            <i class="fas fa-boxes me-2"></i>Products
+                        </a>
+                        <a asp-controller="Orders" asp-action="Index" class="btn btn-outline-info btn-modern">
+                            <i class="fas fa-shopping-cart me-2"></i>Orders
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <style>
+        .user-avatar-large {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+        }
+
+        .account-stats {
+            border-top: 1px solid var(--border-color);
+            padding-top: 1rem;
+        }
+    </style>
+}

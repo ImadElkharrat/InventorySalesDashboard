@@ -1,0 +1,300 @@
+﻿@model IEnumerable<InventorySalesDashboard.Models.Product>
+
+@{
+    ViewData["Title"] = "Products";
+}
+
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="page-title mb-1">📦 Product Management</h1>
+            <p class="text-muted mb-0">Manage your inventory products, stock levels, and pricing</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a asp-action="ExportToExcel" class="btn btn-success btn-modern">
+                <i class="fas fa-file-excel me-2"></i>Export to Excel
+            </a>
+            <a asp-action="Create" class="btn btn-primary btn-modern">
+                <i class="fas fa-plus me-2"></i>Add New Product
+            </a>
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="row g-3 mb-4">
+        <div class="col-xl-2 col-md-4 col-6">
+            <div class="metric-card">
+                <div class="metric-icon">
+                    <i class="fas fa-boxes"></i>
+                </div>
+                <div class="metric-value">@Model.Count()</div>
+                <div class="metric-label">Total Products</div>
+            </div>
+        </div>
+        <div class="col-xl-2 col-md-4 col-6">
+            <div class="metric-card">
+                <div class="metric-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--success);">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="metric-value">
+                    @Model.Count(p => p.StockQuantity > p.ReorderLevel)
+                </div>
+                <div class="metric-label">In Stock</div>
+            </div>
+        </div>
+        <div class="col-xl-2 col-md-4 col-6">
+            <div class="metric-card">
+                <div class="metric-icon" style="background: rgba(245, 158, 11, 0.1); color: var(--warning);">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="metric-value">
+                    @Model.Count(p => p.StockQuantity <= p.ReorderLevel && p.StockQuantity > 0)
+                </div>
+                <div class="metric-label">Low Stock</div>
+            </div>
+        </div>
+        <div class="col-xl-2 col-md-4 col-6">
+            <div class="metric-card">
+                <div class="metric-icon" style="background: rgba(239, 68, 68, 0.1); color: var(--danger);">
+                    <i class="fas fa-times-circle"></i>
+                </div>
+                <div class="metric-value">
+                    @Model.Count(p => p.StockQuantity == 0)
+                </div>
+                <div class="metric-label">Out of Stock</div>
+            </div>
+        </div>
+        <div class="col-xl-2 col-md-4 col-6">
+            <div class="metric-card">
+                <div class="metric-icon" style="background: rgba(99, 102, 241, 0.1); color: var(--primary);">
+                    <i class="fas fa-tags"></i>
+                </div>
+                <div class="metric-value">
+                    @Model.Select(p => p.Category).Distinct().Count()
+                </div>
+                <div class="metric-label">Categories</div>
+            </div>
+        </div>
+        <div class="col-xl-2 col-md-4 col-6">
+            <div class="metric-card">
+                <div class="metric-icon" style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6;">
+                    <i class="fas fa-truck"></i>
+                </div>
+                <div class="metric-value">
+                    @Model.Select(p => p.SupplierId).Distinct().Count()
+                </div>
+                <div class="metric-label">Suppliers</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Products Table -->
+    <div class="modern-card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">
+                <i class="fas fa-list me-2"></i>
+                All Products
+            </h5>
+            <div class="d-flex gap-2">
+                <div class="input-group input-group-sm" style="width: 250px;">
+                    <input type="text" class="form-control" placeholder="Search products..." id="searchInput">
+                    <button class="btn btn-outline-secondary" type="button">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table modern-table" id="productsTable">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>SKU</th>
+                            <th>Price</th>
+                            <th>Stock</th>
+                            <th>Status</th>
+                            <th>Category</th>
+                            <th>Supplier</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        @if (!string.IsNullOrEmpty(item.ImageUrl))
+                                        {
+                                            <img src="@item.ImageUrl" alt="@item.Name"
+                                                 class="rounded me-3" style="width: 50px; height: 50px; object-fit: cover;">
+                                        }
+                                        else
+                                        {
+                                            <div class="rounded bg-secondary d-flex align-items-center justify-content-center me-3"
+                                                 style="width: 50px; height: 50px;">
+                                                <i class="fas fa-box text-light"></i>
+                                            </div>
+                                        }
+                                        <div>
+                                            <div class="fw-semibold">@Html.DisplayFor(modelItem => item.Name)</div>
+                                            @if (!string.IsNullOrEmpty(item.Description))
+                                            {
+                                                <small class="text-muted">@item.Description.Truncate(50)</small>
+                                            }
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <code class="bg-light rounded px-2 py-1">@Html.DisplayFor(modelItem => item.SKU)</code>
+                                </td>
+                                <td>
+                                    <div class="fw-bold text-success">@Html.DisplayFor(modelItem => item.Price)</div>
+                                    <small class="text-muted">Cost: @item.CostPrice.ToString("C")</small>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="progress flex-grow-1 me-2" style="height: 8px;">
+                                            @{
+                                                var maxStock = Math.Max(item.StockQuantity, item.ReorderLevel * 2);
+                                                var progress = maxStock > 0 ? (double)item.StockQuantity / maxStock * 100 : 0;
+                                                progress = Math.Min(progress, 100);
+
+                                                string progressClass = "bg-success";
+                                                if (item.StockQuantity == 0)
+                                                    progressClass = "bg-danger";
+                                                else if (item.StockQuantity <= item.ReorderLevel)
+                                                    progressClass = "bg-warning";
+                                            }
+                                            <div class="progress-bar @progressClass" style="width: @progress%"></div>
+                                        </div>
+                                        <span class="fw-semibold">@Html.DisplayFor(modelItem => item.StockQuantity)</span>
+                                    </div>
+                                    <small class="text-muted">Reorder: @item.ReorderLevel</small>
+                                </td>
+                                <td>
+                                    @if (item.StockQuantity == 0)
+                                    {
+                                        <span class="badge bg-danger">
+                                            <i class="fas fa-times-circle me-1"></i>Out of Stock
+                                        </span>
+                                    }
+                                    else if (item.StockQuantity <= item.ReorderLevel)
+                                    {
+                                        <span class="badge bg-warning">
+                                            <i class="fas fa-exclamation-triangle me-1"></i>Low Stock
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success">
+                                            <i class="fas fa-check-circle me-1"></i>In Stock
+                                        </span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(item.Category))
+                                    {
+                                        <span class="badge bg-info">@item.Category</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (item.Supplier != null)
+                                    {
+                                        <div class="fw-medium">@item.Supplier.Name</div>
+                                        <small class="text-muted">@item.Supplier.Email</small>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">No Supplier</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a asp-action="Edit" asp-route-id="@item.Id"
+                                           class="btn btn-outline-primary" data-bs-toggle="tooltip" title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a asp-action="Details" asp-route-id="@item.Id"
+                                           class="btn btn-outline-info" data-bs-toggle="tooltip" title="Details">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@item.Id"
+                                           class="btn btn-outline-danger" data-bs-toggle="tooltip" title="Delete">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            @if (!Model.Any())
+            {
+                <div class="text-center py-5">
+                    <i class="fas fa-box-open text-muted mb-3" style="font-size: 3rem;"></i>
+                    <h5 class="text-muted">No products found</h5>
+                    <p class="text-muted">Get started by adding your first product to the inventory.</p>
+                    <a asp-action="Create" class="btn btn-primary btn-modern">
+                        <i class="fas fa-plus me-2"></i>Add Your First Product
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize tooltips
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+
+            // Search functionality
+            const searchInput = document.getElementById('searchInput');
+            const productsTable = document.getElementById('productsTable');
+
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    const searchTerm = this.value.toLowerCase();
+                    const rows = productsTable.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+                    for (let row of rows) {
+                        const text = row.textContent.toLowerCase();
+                        row.style.display = text.includes(searchTerm) ? '' : 'none';
+                    }
+                });
+            }
+
+            // Add row hover effects
+            const tableRows = document.querySelectorAll('#productsTable tbody tr');
+            tableRows.forEach(row => {
+                row.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateX(4px)';
+                    this.style.transition = 'transform 0.2s ease';
+                });
+
+                row.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateX(0)';
+                });
+            });
+        });
+
+        // Helper function to truncate text (if not using the actual Truncate method)
+        function truncateText(text, maxLength) {
+            if (text.length <= maxLength) return text;
+            return text.substr(0, maxLength) + '...';
+        }
+    </script>
+}

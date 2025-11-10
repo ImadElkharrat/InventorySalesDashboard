@@ -1,0 +1,245 @@
+﻿@{
+    ViewData["Title"] = "Reports";
+}
+
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="page-title mb-1">📊 Advanced Reports</h1>
+            <p class="text-muted mb-0">Comprehensive analytics and insights for your business</p>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-primary btn-modern" onclick="refreshReports()">
+                <i class="fas fa-sync-alt me-2"></i>Refresh Data
+            </button>
+        </div>
+    </div>
+
+    <!-- Reports Grid -->
+    <div class="row g-4">
+        <!-- Sales Report Card -->
+        <div class="col-xl-4 col-md-6">
+            <div class="modern-card h-100">
+                <div class="card-body text-center p-4">
+                    <div class="metric-icon mx-auto mb-3" style="background: rgba(16, 185, 129, 0.1); color: var(--success); width: 80px; height: 80px;">
+                        <i class="fas fa-chart-line" style="font-size: 2rem;"></i>
+                    </div>
+                    <h4 class="fw-bold mb-2">Sales Report</h4>
+                    <p class="text-muted mb-4">Detailed sales analysis with date range filtering and revenue tracking</p>
+                    <div class="row text-center mb-3">
+                        <div class="col-4">
+                            <div class="fw-bold text-primary">Revenue</div>
+                            <small class="text-muted">Tracking</small>
+                        </div>
+                        <div class="col-4">
+                            <div class="fw-bold text-success">Profit</div>
+                            <small class="text-muted">Analysis</small>
+                        </div>
+                        <div class="col-4">
+                            <div class="fw-bold text-info">Trends</div>
+                            <small class="text-muted">Charts</small>
+                        </div>
+                    </div>
+                    <a asp-action="SalesReport" class="btn btn-success btn-modern w-100">
+                        <i class="fas fa-chart-bar me-2"></i>View Sales Report
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Inventory Report Card -->
+        <div class="col-xl-4 col-md-6">
+            <div class="modern-card h-100">
+                <div class="card-body text-center p-4">
+                    <div class="metric-icon mx-auto mb-3" style="background: rgba(99, 102, 241, 0.1); color: var(--primary); width: 80px; height: 80px;">
+                        <i class="fas fa-boxes" style="font-size: 2rem;"></i>
+                    </div>
+                    <h4 class="fw-bold mb-2">Inventory Report</h4>
+                    <p class="text-muted mb-4">Complete inventory valuation, stock analysis, and turnover rates</p>
+                    <div class="row text-center mb-3">
+                        <div class="col-4">
+                            <div class="fw-bold text-warning">Stock Value</div>
+                            <small class="text-muted">Valuation</small>
+                        </div>
+                        <div class="col-4">
+                            <div class="fw-bold text-danger">Low Stock</div>
+                            <small class="text-muted">Alerts</small>
+                        </div>
+                        <div class="col-4">
+                            <div class="fw-bold text-info">Turnover</div>
+                            <small class="text-muted">Rates</small>
+                        </div>
+                    </div>
+                    <a asp-action="InventoryReport" class="btn btn-primary btn-modern w-100">
+                        <i class="fas fa-chart-pie me-2"></i>View Inventory Report
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Product Performance Card -->
+        <div class="col-xl-4 col-md-6">
+            <div class="modern-card h-100">
+                <div class="card-body text-center p-4">
+                    <div class="metric-icon mx-auto mb-3" style="background: rgba(245, 158, 11, 0.1); color: var(--warning); width: 80px; height: 80px;">
+                        <i class="fas fa-trophy" style="font-size: 2rem;"></i>
+                    </div>
+                    <h4 class="fw-bold mb-2">Product Performance</h4>
+                    <p class="text-muted mb-4">Best-selling products, profit margins, and performance analytics</p>
+                    <div class="row text-center mb-3">
+                        <div class="col-4">
+                            <div class="fw-bold text-success">Top Sellers</div>
+                            <small class="text-muted">Products</small>
+                        </div>
+                        <div class="col-4">
+                            <div class="fw-bold text-primary">Margins</div>
+                            <small class="text-muted">Profit</small>
+                        </div>
+                        <div class="col-4">
+                            <div class="fw-bold text-info">Ranking</div>
+                            <small class="text-muted">Performance</small>
+                        </div>
+                    </div>
+                    <a asp-action="ProductPerformance" class="btn btn-warning btn-modern w-100">
+                        <i class="fas fa-chart-bar me-2"></i>View Performance
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Stats Cards -->
+        <div class="col-xl-3 col-md-6">
+            <div class="modern-card">
+                <div class="card-body text-center">
+                    <i class="fas fa-download text-primary mb-3" style="font-size: 2rem;"></i>
+                    <h5 class="fw-bold">Export Data</h5>
+                    <p class="text-muted small">Export reports to Excel for further analysis</p>
+                    <div class="btn-group w-100">
+                        <a href="#" class="btn btn-outline-success btn-sm">
+                            <i class="fas fa-file-excel me-1"></i>Excel
+                        </a>
+                        <a href="#" class="btn btn-outline-danger btn-sm">
+                            <i class="fas fa-file-pdf me-1"></i>PDF
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="modern-card">
+                <div class="card-body text-center">
+                    <i class="fas fa-filter text-info mb-3" style="font-size: 2rem;"></i>
+                    <h5 class="fw-bold">Custom Filters</h5>
+                    <p class="text-muted small">Filter reports by date range, categories, and more</p>
+                    <button class="btn btn-outline-primary btn-sm w-100">
+                        <i class="fas fa-sliders-h me-1"></i>Configure
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="modern-card">
+                <div class="card-body text-center">
+                    <i class="fas fa-bell text-warning mb-3" style="font-size: 2rem;"></i>
+                    <h5 class="fw-bold">Alert Reports</h5>
+                    <p class="text-muted small">Get notified about critical stock levels and sales trends</p>
+                    <button class="btn btn-outline-warning btn-sm w-100">
+                        <i class="fas fa-cog me-1"></i>Settings
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="modern-card">
+                <div class="card-body text-center">
+                    <i class="fas fa-history text-secondary mb-3" style="font-size: 2rem;"></i>
+                    <h5 class="fw-bold">Report History</h5>
+                    <p class="text-muted small">Access previously generated reports and analytics</p>
+                    <button class="btn btn-outline-secondary btn-sm w-100">
+                        <i class="fas fa-archive me-1"></i>View History
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="modern-card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-history me-2"></i>
+                        Recent Report Activity
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <i class="fas fa-chart-line text-success me-2"></i>
+                                <span>Sales Report generated</span>
+                            </div>
+                            <small class="text-muted">2 hours ago</small>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <i class="fas fa-boxes text-primary me-2"></i>
+                                <span>Inventory analysis completed</span>
+                            </div>
+                            <small class="text-muted">1 day ago</small>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <i class="fas fa-trophy text-warning me-2"></i>
+                                <span>Product performance updated</span>
+                            </div>
+                            <small class="text-muted">3 days ago</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function refreshReports() {
+            // Show loading state
+            const buttons = document.querySelectorAll('.btn-modern');
+            buttons.forEach(btn => {
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Loading...';
+                btn.disabled = true;
+
+                // Restore after 2 seconds
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }, 2000);
+            });
+
+            // Show notification
+            UI.showNotification('Reports data refreshed successfully!', 'success');
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add hover effects to report cards
+            const reportCards = document.querySelectorAll('.modern-card');
+            reportCards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-5px)';
+                });
+
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+        });
+    </script>
+}

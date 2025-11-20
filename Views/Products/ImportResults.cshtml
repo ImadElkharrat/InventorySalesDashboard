@@ -1,0 +1,164 @@
+﻿@model InventorySalesDashboard.Models.ImportResults
+
+@{
+    ViewData["Title"] = "Résultats d'Importation";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="page-title mb-1">📊 Résultats d'Importation</h1>
+            <p class="text-muted mb-0">Résumé de l'importation des produits</p>
+        </div>
+        <div>
+            <a asp-action="Index" class="btn btn-outline-secondary btn-modern">
+                <i class="fas fa-arrow-left me-2"></i>Retour aux Produits
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Summary Card -->
+            <div class="modern-card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-bar me-2 text-primary"></i>
+                        Résumé de l'Importation
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-3">
+                            <div class="metric-card">
+                                <div class="metric-value text-primary">@Model.TotalProcessed</div>
+                                <div class="metric-label">Total Traités</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="metric-card">
+                                <div class="metric-value text-success">@Model.SuccessCount</div>
+                                <div class="metric-label">Nouveaux Produits</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="metric-card">
+                                <div class="metric-value text-info">@Model.UpdatedCount</div>
+                                <div class="metric-label">Mis à Jour</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="metric-card">
+                                <div class="metric-value text-warning">@Model.ErrorCount</div>
+                                <div class="metric-label">Erreurs</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Progress Bar -->
+                    @if (Model.TotalProcessed > 0)
+                    {
+                        var successRate = (Model.SuccessCount + Model.UpdatedCount) * 100 / Model.TotalProcessed;
+                        <div class="mt-4">
+                            <label class="form-label fw-semibold">Taux de Réussite</label>
+                            <div class="progress" style="height: 20px;">
+                                <div class="progress-bar bg-success" style="width: @successRate%">
+                                    @successRate%
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Errors Card -->
+            @if (Model.Errors.Any())
+            {
+                <div class="modern-card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-exclamation-triangle me-2 text-danger"></i>
+                            Erreurs Rencontrées (@Model.Errors.Count)
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-danger">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Les erreurs suivantes sont survenues lors de l'importation :
+                        </div>
+
+                        <div class="error-list">
+                            @foreach (var error in Model.Errors)
+                            {
+                                <div class="error-item d-flex align-items-start mb-2 p-2 border rounded">
+                                    <i class="fas fa-times-circle text-danger me-2 mt-1"></i>
+                                    <span class="small">@error</span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="modern-card">
+                    <div class="card-body text-center py-5">
+                        <i class="fas fa-check-circle text-success mb-3" style="font-size: 4rem;"></i>
+                        <h4 class="text-success">Importation Réussie !</h4>
+                        <p class="text-muted">Aucune erreur rencontrée lors de l'importation.</p>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="col-lg-4">
+            <!-- Next Steps Card -->
+            <div class="modern-card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-arrow-right me-2 text-success"></i>
+                        Prochaines Étapes
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a asp-action="Index" class="btn btn-primary btn-modern">
+                            <i class="fas fa-boxes me-2"></i>Voir tous les Produits
+                        </a>
+                        <a asp-action="ImportFromJson" class="btn btn-success btn-modern">
+                            <i class="fas fa-redo me-2"></i>Nouvelle Importation
+                        </a>
+                        <a asp-action="Create" class="btn btn-info btn-modern">
+                            <i class="fas fa-plus me-2"></i>Ajouter un Produit Manuellement
+                        </a>
+                    </div>
+
+                    <hr class="my-3">
+
+                    <div class="alert alert-info">
+                        <h6 class="alert-heading">
+                            <i class="fas fa-lightbulb me-2"></i>Conseils
+                        </h6>
+                        <ul class="small mb-0">
+                            <li>Vérifiez les produits importés</li>
+                            <li>Corrigez les erreurs dans votre fichier JSON</li>
+                            <li>Utilisez l'export JSON comme modèle</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .error-list {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    .error-item {
+        background: rgba(220, 53, 69, 0.1);
+        border-color: rgba(220, 53, 69, 0.2) !important;
+    }
+</style>

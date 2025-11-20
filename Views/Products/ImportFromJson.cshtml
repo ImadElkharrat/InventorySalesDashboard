@@ -1,0 +1,160 @@
+﻿@{
+    ViewData["Title"] = "Importer des Produits JSON";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="page-title mb-1">📤 Importer des Produits</h1>
+            <p class="text-muted mb-0">Importer des produits à partir d'un fichier JSON</p>
+        </div>
+        <div>
+            <a asp-action="Index" class="btn btn-outline-secondary btn-modern">
+                <i class="fas fa-arrow-left me-2"></i>Retour aux Produits
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="modern-card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-file-import me-2 text-primary"></i>
+                        Importer un Fichier JSON
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="ImportFromJson" method="post" enctype="multipart/form-data" class="modern-form">
+                        @Html.AntiForgeryToken()
+
+                        <!-- File Upload -->
+                        <div class="form-section">
+                            <div class="form-section-title">
+                                <i class="fas fa-file-upload me-2 text-info"></i>
+                                Sélection du Fichier
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Fichier JSON *</label>
+                                <input type="file" name="jsonFile" class="form-control" accept=".json" required />
+                                <small class="form-text text-muted">
+                                    Sélectionnez un fichier JSON contenant les données des produits
+                                </small>
+                            </div>
+                        </div>
+
+                        <!-- Import Options -->
+                        <div class="form-section">
+                            <div class="form-section-title">
+                                <i class="fas fa-cog me-2 text-warning"></i>
+                                Options d'Importation
+                            </div>
+                            <div class="mb-3">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" name="updateExisting" value="true" id="updateExisting">
+                                    <label class="form-check-label" for="updateExisting">
+                                        Mettre à jour les produits existants
+                                    </label>
+                                </div>
+                                <small class="form-text text-muted">
+                                    Si coché, les produits avec le même SKU seront mis à jour. Sinon, ils seront ignorés.
+                                </small>
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="form-actions">
+                            <a asp-action="Index" class="btn btn-outline-secondary btn-modern">
+                                <i class="fas fa-times me-2"></i>Annuler
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-modern">
+                                <i class="fas fa-upload me-2"></i>Importer les Produits
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <!-- Format Information -->
+            <div class="modern-card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-info-circle me-2 text-info"></i>
+                        Format JSON Requis
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="small text-muted">
+                        Le fichier JSON doit contenir un tableau d'objets produit avec les propriétés suivantes :
+                    </p>
+
+                    <div class="bg-dark text-light rounded p-3 mb-3">
+                        <pre class="mb-0 small">
+[
+  {
+    "name": "Nom du produit",
+    "sku": "SKU12345",
+    "price": 99.99,
+    "costPrice": 49.99,
+    "stockQuantity": 100,
+    "reorderLevel": 10,
+    "description": "Description optionnelle",
+    "category": "Catégorie",
+    "imageUrl": "URL de l'image",
+    "supplierName": "Nom du fournisseur"
+  }
+]</pre>
+                    </div>
+
+                    <div class="alert alert-warning small">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Note :</strong> Le SKU doit être unique. Les produits avec des SKU existants seront mis à jour ou ignorés selon l'option sélectionnée.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="modern-card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-bolt me-2 text-warning"></i>
+                        Actions Rapides
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a asp-action="ExportToJson" class="btn btn-success btn-modern">
+                            <i class="fas fa-download me-2"></i>Télécharger JSON Exemple
+                        </a>
+                        <a asp-action="Create" class="btn btn-primary btn-modern">
+                            <i class="fas fa-plus me-2"></i>Ajouter un Produit
+                        </a>
+                        <a asp-action="ExportToExcel" class="btn btn-info btn-modern">
+                            <i class="fas fa-file-excel me-2"></i>Exporter vers Excel
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add file validation
+            const fileInput = document.querySelector('input[type="file"]');
+            if (fileInput) {
+                fileInput.addEventListener('change', function() {
+                    const file = this.files[0];
+                    if (file && !file.name.toLowerCase().endsWith('.json')) {
+                        alert('Veuillez sélectionner un fichier JSON (.json)');
+                        this.value = '';
+                    }
+                });
+            }
+        });
+    </script>
+}

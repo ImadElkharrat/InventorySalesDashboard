@@ -17,12 +17,27 @@ namespace InventorySalesDashboard.Controllers
         private readonly ApplicationDbContext _context;
         private readonly InvoiceService _invoiceService;
         private readonly IHubContext<DashboardHub> _hubContext;
+        private readonly ExcelExportService _excelExportService;
 
-        public OrdersController(ApplicationDbContext context, InvoiceService invoiceService, IHubContext<DashboardHub> hubContext)
+        // Update constructor
+        public OrdersController(ApplicationDbContext context, InvoiceService invoiceService,
+            IHubContext<DashboardHub> hubContext, ExcelExportService excelExportService)
         {
             _context = context;
             _invoiceService = invoiceService;
             _hubContext = hubContext;
+            _excelExportService = excelExportService;
+        }
+
+        public async Task<IActionResult> ExportToExcel()
+        {
+            var orders = await _context.Orders
+                .Include(o => o.OrderLines)
+                .ToListAsync();
+
+            var excelBytes = _excelExportService.ExportOrdersToExcel(orders);
+            return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                $"Orders_Export_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx");
         }
 
         // GET: Orders

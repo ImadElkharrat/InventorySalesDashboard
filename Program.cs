@@ -57,6 +57,12 @@ builder.Services.AddHostedService<LowStockAlertService>();
 // Add SignalR
 builder.Services.AddSignalR();
 
+// Register Excel Export Service
+builder.Services.AddScoped<ExcelExportService>();
+
+// Register JSON Service
+builder.Services.AddScoped<JsonService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

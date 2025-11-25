@@ -795,3 +795,76 @@ body {
 .form-control[type="file"]::file-selector-button:hover {
     background: var(--primary-dark);
 }
+
+
+/* === Category Styles === */
+.category-preview {
+    min-height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-btn {
+    padding: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+    .icon-btn:hover {
+        transform: scale(1.1);
+    }
+
+    .icon-btn i {
+        font-size: 1.1rem;
+    }
+
+.form-control-color {
+    height: 45px;
+    padding: 0.2rem;
+}
+
+/* Category badges */
+.category-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Form switch customization */
+.form-check-input:checked {
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+/* Category stats in cards */
+.category-stats {
+    border-top: 1px solid var(--border-color);
+    padding-top: 1rem;
+    margin-top: 1rem;
+}
+
+/* Color input styling */
+input[type="color"] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border: none;
+    cursor: pointer;
+}
+
+    input[type="color"]::-webkit-color-swatch-wrapper {
+        padding: 0;
+    }
+
+    input[type="color"]::-webkit-color-swatch {
+        border: none;
+        border-radius: 4px;
+    }
+
+    input[type="color"]::-moz-color-swatch {
+        border: none;
+        border-radius: 4px;
+    }

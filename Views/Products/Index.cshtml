@@ -203,9 +203,9 @@
                                     }
                                 </td>
                                 <td>
-                                    @if (!string.IsNullOrEmpty(item.Category))
+                                    @if (item.Category != null)
                                     {
-                                        <span class="badge bg-info">@item.Category</span>
+                                        <span class="badge bg-info">@item.Category.Name</span>
                                     }
                                     else
                                     {

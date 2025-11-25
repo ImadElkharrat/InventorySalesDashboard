@@ -1,0 +1,405 @@
+﻿@model InventorySalesDashboard.Models.Category
+
+@{
+    ViewData["Title"] = "Create Category";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="page-title mb-1">🏷️ Create New Category</h1>
+            <p class="text-muted mb-0">Add a new product category to organize your inventory</p>
+        </div>
+        <div>
+            <a asp-action="Index" class="btn btn-outline-secondary btn-modern">
+                <i class="fas fa-arrow-left me-2"></i>Back to Categories
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="modern-card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-plus-circle me-2 text-primary"></i>
+                        Category Information
+                    </h5>
+                </div>
+
+                <form asp-action="Create" class="modern-form">
+                    <div class="card-body">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        <!-- Basic Information Section -->
+                        <div class="form-section">
+                            <div class="form-section-title">
+                                <i class="fas fa-info-circle"></i>
+                                Basic Information
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="Name" class="form-label">
+                                        <i class="fas fa-tag me-2 text-primary"></i>Category Name *
+                                    </label>
+                                    <input asp-for="Name" class="form-control" placeholder="Enter category name" />
+                                    <span asp-validation-for="Name" class="text-danger"></span>
+                                    <small class="form-text text-muted">
+                                        Unique name for the category (e.g., Electronics, Clothing, Food)
+                                    </small>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="Color" class="form-label">
+                                        <i class="fas fa-palette me-2 text-primary"></i>Color
+                                    </label>
+                                    <div class="input-group">
+                                        <input asp-for="Color" type="color" class="form-control form-control-color"
+                                               value="#6366f1" title="Choose category color">
+                                        <span class="input-group-text">Color Preview</span>
+                                    </div>
+                                    <span asp-validation-for="Color" class="text-danger"></span>
+                                    <small class="form-text text-muted">
+                                        Color for category badges and UI elements
+                                    </small>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-12 mb-3">
+                                    <label asp-for="Description" class="form-label">
+                                        <i class="fas fa-align-left me-2 text-primary"></i>Description
+                                    </label>
+                                    <textarea asp-for="Description" class="form-control form-textarea"
+                                              placeholder="Enter category description (optional)"
+                                              rows="3"></textarea>
+                                    <span asp-validation-for="Description" class="text-danger"></span>
+                                    <small class="form-text text-muted">
+                                        Optional description to provide more context about this category
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Advanced Options Section -->
+                        <div class="form-section">
+                            <div class="form-section-title">
+                                <i class="fas fa-cog"></i>
+                                Advanced Options
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="Icon" class="form-label">
+                                        <i class="fas fa-icons me-2 text-primary"></i>Icon
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">
+                                            <i id="iconPreview" class="fas fa-tag"></i>
+                                        </span>
+                                        <input asp-for="Icon" class="form-control"
+                                               placeholder="fas fa-tag"
+                                               id="iconInput" />
+                                    </div>
+                                    <span asp-validation-for="Icon" class="text-danger"></span>
+                                    <small class="form-text text-muted">
+                                        Font Awesome icon class (e.g., fas fa-laptop, fas fa-tshirt)
+                                    </small>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Status</label>
+                                    <div class="form-check form-switch mt-2">
+                                        <input class="form-check-input" type="checkbox" asp-for="IsActive" checked>
+                                        <label class="form-check-label" asp-for="IsActive">
+                                            Active Category
+                                        </label>
+                                    </div>
+                                    <small class="form-text text-muted">
+                                        Inactive categories won't appear in dropdowns
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Tips Section -->
+                        <div class="form-section">
+                            <div class="form-section-title">
+                                <i class="fas fa-lightbulb"></i>
+                                Category Tips
+                            </div>
+                            <div class="alert alert-info">
+                                <div class="d-flex">
+                                    <i class="fas fa-info-circle me-2 mt-1"></i>
+                                    <div>
+                                        <strong>Best Practices:</strong>
+                                        <ul class="mb-0 mt-1">
+                                            <li>Use clear, descriptive names</li>
+                                            <li>Create categories that group similar products</li>
+                                            <li>Use colors and icons for better visual organization</li>
+                                            <li>Keep category names consistent across your inventory</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="form-actions">
+                        <a asp-action="Index" class="btn btn-outline-secondary btn-modern">
+                            <i class="fas fa-times me-2"></i>Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary btn-modern">
+                            <i class="fas fa-save me-2"></i>Create Category
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <!-- Preview Card -->
+            <div class="modern-card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-eye me-2 text-info"></i>
+                        Category Preview
+                    </h5>
+                </div>
+                <div class="card-body text-center">
+                    <div class="category-preview mb-3">
+                        <div id="previewBadge" class="badge fs-6 mb-2" style="background: #6366f1; color: white;">
+                            <i id="previewIcon" class="fas fa-tag me-1"></i>
+                            <span id="previewName">Category Name</span>
+                        </div>
+                    </div>
+
+                    <div id="previewDescription" class="text-muted small">
+                        Category description will appear here
+                    </div>
+
+                    <div class="mt-3">
+                        <small class="text-muted">This is how your category will appear throughout the application</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Popular Icons Card -->
+            <div class="modern-card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-star me-2 text-warning"></i>
+                        Popular Icons
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-2 text-center">
+                        <div class="col-3">
+                            <button type="button" class="btn btn-outline-primary btn-sm w-100 icon-btn" data-icon="fas fa-laptop">
+                                <i class="fas fa-laptop"></i>
+                            </button>
+                        </div>
+                        <div class="col-3">
+                            <button type="button" class="btn btn-outline-primary btn-sm w-100 icon-btn" data-icon="fas fa-tshirt">
+                                <i class="fas fa-tshirt"></i>
+                            </button>
+                        </div>
+                        <div class="col-3">
+                            <button type="button" class="btn btn-outline-primary btn-sm w-100 icon-btn" data-icon="fas fa-utensils">
+                                <i class="fas fa-utensils"></i>
+                            </button>
+                        </div>
+                        <div class="col-3">
+                            <button type="button" class="btn btn-outline-primary btn-sm w-100 icon-btn" data-icon="fas fa-book">
+                                <i class="fas fa-book"></i>
+                            </button>
+                        </div>
+                        <div class="col-3">
+                            <button type="button" class="btn btn-outline-primary btn-sm w-100 icon-btn" data-icon="fas fa-home">
+                                <i class="fas fa-home"></i>
+                            </button>
+                        </div>
+                        <div class="col-3">
+                            <button type="button" class="btn btn-outline-primary btn-sm w-100 icon-btn" data-icon="fas fa-tools">
+                                <i class="fas fa-tools"></i>
+                            </button>
+                        </div>
+                        <div class="col-3">
+                            <button type="button" class="btn btn-outline-primary btn-sm w-100 icon-btn" data-icon="fas fa-heart">
+                                <i class="fas fa-heart"></i>
+                            </button>
+                        </div>
+                        <div class="col-3">
+                            <button type="button" class="btn btn-outline-primary btn-sm w-100 icon-btn" data-icon="fas fa-star">
+                                <i class="fas fa-star"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="mt-3">
+                        <small class="text-muted">
+                            Click an icon to use it. Find more at
+                            <a href="https://fontawesome.com/icons" target="_blank" class="text-primary">Font Awesome</a>
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions Card -->
+            <div class="modern-card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-bolt me-2 text-success"></i>
+                        Quick Actions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a asp-controller="Products" asp-action="Create" class="btn btn-outline-primary btn-modern">
+                            <i class="fas fa-plus me-2"></i>Add Product
+                        </a>
+                        <a asp-controller="Products" asp-action="Index" class="btn btn-outline-success btn-modern">
+                            <i class="fas fa-boxes me-2"></i>View Products
+                        </a>
+                        <a asp-action="Index" class="btn btn-outline-info btn-modern">
+                            <i class="fas fa-list me-2"></i>All Categories
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get DOM elements
+            const nameInput = document.getElementById('Name');
+            const descriptionInput = document.getElementById('Description');
+            const colorInput = document.getElementById('Color');
+            const iconInput = document.getElementById('iconInput');
+            const previewName = document.getElementById('previewName');
+            const previewDescription = document.getElementById('previewDescription');
+            const previewBadge = document.getElementById('previewBadge');
+            const previewIcon = document.getElementById('previewIcon');
+            const iconButtons = document.querySelectorAll('.icon-btn');
+
+            // Update preview when name changes
+            if (nameInput) {
+                nameInput.addEventListener('input', function() {
+                    previewName.textContent = this.value || 'Category Name';
+                });
+            }
+
+            // Update preview when description changes
+            if (descriptionInput) {
+                descriptionInput.addEventListener('input', function() {
+                    previewDescription.textContent = this.value || 'Category description will appear here';
+                });
+            }
+
+            // Update preview when color changes
+            if (colorInput) {
+                colorInput.addEventListener('input', function() {
+                    previewBadge.style.background = this.value;
+                });
+            }
+
+            // Update preview when icon changes
+            if (iconInput) {
+                iconInput.addEventListener('input', function() {
+                    if (this.value) {
+                        previewIcon.className = this.value;
+                    } else {
+                        previewIcon.className = 'fas fa-tag';
+                    }
+                });
+            }
+
+            // Handle icon button clicks
+            iconButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const iconClass = this.getAttribute('data-icon');
+                    iconInput.value = iconClass;
+                    previewIcon.className = iconClass;
+
+                    // Visual feedback
+                    iconButtons.forEach(btn => btn.classList.remove('btn-primary'));
+                    this.classList.add('btn-primary');
+                });
+            });
+
+            // Initialize preview with default values
+            if (nameInput) previewName.textContent = nameInput.value || 'Category Name';
+            if (descriptionInput) previewDescription.textContent = descriptionInput.value || 'Category description will appear here';
+            if (colorInput) previewBadge.style.background = colorInput.value;
+            if (iconInput && iconInput.value) {
+                previewIcon.className = iconInput.value;
+            }
+
+            // Add character counter for name
+            if (nameInput) {
+                nameInput.addEventListener('input', function() {
+                    const maxLength = 100;
+                    const currentLength = this.value.length;
+                    const counter = document.getElementById('nameCounter') || createCounter();
+
+                    counter.textContent = `${currentLength}/${maxLength} characters`;
+                    counter.className = `form-text ${currentLength > maxLength ? 'text-danger' : 'text-muted'}`;
+
+                    if (currentLength > maxLength) {
+                        this.classList.add('is-invalid');
+                    } else {
+                        this.classList.remove('is-invalid');
+                    }
+                });
+
+                function createCounter() {
+                    const counter = document.createElement('div');
+                    counter.id = 'nameCounter';
+                    counter.className = 'form-text text-muted';
+                    nameInput.parentNode.appendChild(counter);
+                    return counter;
+                }
+            }
+        });
+    </script>
+
+    <style>
+        .category-preview {
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .icon-btn {
+            padding: 0.5rem;
+            transition: all 0.2s ease;
+        }
+
+            .icon-btn:hover {
+                transform: scale(1.1);
+            }
+
+            .icon-btn i {
+                font-size: 1.1rem;
+            }
+
+        .form-control-color {
+            height: 45px;
+            padding: 0.2rem;
+        }
+
+        /* Custom color for form switch */
+        .form-check-input:checked {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+    </style>
+}

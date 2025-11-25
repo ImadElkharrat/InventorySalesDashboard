@@ -28,7 +28,8 @@ namespace InventorySalesDashboard.Models
 
         public string? Description { get; set; }
 
-        public string? Category { get; set; }
+        public int? CategoryId { get; set; }
+        public Category? Category { get; set; }
 
         [Display(Name = "Image URL")]
         public string? ImageUrl { get; set; }

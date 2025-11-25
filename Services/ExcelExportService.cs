@@ -40,7 +40,7 @@ namespace InventorySalesDashboard.Services
                     worksheet.Cell(currentRow, 5).Value = product.CostPrice;
                     worksheet.Cell(currentRow, 6).Value = product.StockQuantity;
                     worksheet.Cell(currentRow, 7).Value = product.ReorderLevel;
-                    worksheet.Cell(currentRow, 8).Value = product.Category;
+                    worksheet.Cell(currentRow, 8).Value = product.Category?.Name;
                     worksheet.Cell(currentRow, 9).Value = product.Supplier?.Name;
 
                     var statusCell = worksheet.Cell(currentRow, 10);

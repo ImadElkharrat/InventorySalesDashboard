@@ -30,7 +30,7 @@ namespace InventorySalesDashboard.Services
                 StockQuantity = p.StockQuantity,
                 ReorderLevel = p.ReorderLevel,
                 Description = p.Description,
-                Category = p.Category,
+                CategoryName = p.Category?.Name,
                 ImageUrl = p.ImageUrl,
                 SupplierName = p.Supplier?.Name,
                 CreatedDate = DateTime.Now
@@ -70,7 +70,7 @@ namespace InventorySalesDashboard.Services
         public int StockQuantity { get; set; }
         public int ReorderLevel { get; set; }
         public string? Description { get; set; }
-        public string? Category { get; set; }
+        public string? CategoryName { get; set; }
         public string? ImageUrl { get; set; }
         public string? SupplierName { get; set; }
         public DateTime CreatedDate { get; set; }
@@ -86,7 +86,7 @@ namespace InventorySalesDashboard.Services
         public int StockQuantity { get; set; }
         public int ReorderLevel { get; set; }
         public string? Description { get; set; }
-        public string? Category { get; set; }
+        public string? CategoryName { get; set; }
         public string? ImageUrl { get; set; }
         public string? SupplierName { get; set; }
     }

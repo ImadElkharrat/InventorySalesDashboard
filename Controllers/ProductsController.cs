@@ -3,10 +3,6 @@ using InventorySalesDashboard.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Text.Json;
 
 namespace InventorySalesDashboard.Controllers
@@ -29,23 +25,15 @@ namespace InventorySalesDashboard.Controllers
             _jsonService = jsonService;
         }
 
-
-        // Add export action
-        public async Task<IActionResult> ExportToExcel()
-        {
-            var products = await _context.Products
-                .Include(p => p.Supplier)
-                .ToListAsync();
-
-            var excelBytes = _excelExportService.ExportProductsToExcel(products);
-            return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                $"Products_Export_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx");
-        }
-
         // GET: Products
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Products.ToListAsync());
+            var products = await _context.Products
+                .Include(p => p.Supplier)
+                .Include(p => p.Category)
+                .OrderBy(p => p.Name)
+                .ToListAsync();
+            return View(products);
         }
 
         // GET: Products/Details/5
@@ -58,8 +46,8 @@ namespace InventorySalesDashboard.Controllers
 
             var product = await _context.Products
                 .Include(p => p.Supplier)
+                .Include(p => p.Category)
                 .FirstOrDefaultAsync(m => m.Id == id);
-
             if (product == null)
             {
                 return NotFound();
@@ -72,12 +60,11 @@ namespace InventorySalesDashboard.Controllers
         public IActionResult Create()
         {
             ViewData["SupplierId"] = new SelectList(_context.Suppliers, "Id", "Name");
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name");
             return View();
         }
 
         // POST: Products/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Product product, IFormFile? imageFile)
@@ -102,6 +89,7 @@ namespace InventorySalesDashboard.Controllers
                 }
             }
             ViewData["SupplierId"] = new SelectList(_context.Suppliers, "Id", "Name", product.SupplierId);
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", product.CategoryId);
             return View(product);
         }
 
@@ -119,12 +107,11 @@ namespace InventorySalesDashboard.Controllers
                 return NotFound();
             }
             ViewData["SupplierId"] = new SelectList(_context.Suppliers, "Id", "Name", product.SupplierId);
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", product.CategoryId);
             return View(product);
         }
 
         // POST: Products/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Product product, IFormFile? imageFile, bool removeImage = false)
@@ -173,7 +160,7 @@ namespace InventorySalesDashboard.Controllers
                     existingProduct.SupplierId = product.SupplierId;
                     existingProduct.CostPrice = product.CostPrice;
                     existingProduct.Description = product.Description;
-                    existingProduct.Category = product.Category;
+                    existingProduct.CategoryId = product.CategoryId;
 
                     _context.Update(existingProduct);
                     await _context.SaveChangesAsync();
@@ -196,11 +183,13 @@ namespace InventorySalesDashboard.Controllers
                 {
                     ModelState.AddModelError("", ex.Message);
                     ViewData["SupplierId"] = new SelectList(_context.Suppliers, "Id", "Name", product.SupplierId);
+                    ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", product.CategoryId);
                     return View(product);
                 }
                 return RedirectToAction(nameof(Index));
             }
             ViewData["SupplierId"] = new SelectList(_context.Suppliers, "Id", "Name", product.SupplierId);
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", product.CategoryId);
             return View(product);
         }
 
@@ -213,6 +202,8 @@ namespace InventorySalesDashboard.Controllers
             }
 
             var product = await _context.Products
+                .Include(p => p.Supplier)
+                .Include(p => p.Category)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (product == null)
             {
@@ -231,9 +222,10 @@ namespace InventorySalesDashboard.Controllers
             if (product != null)
             {
                 _context.Products.Remove(product);
+                await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Product deleted successfully!";
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
@@ -242,7 +234,19 @@ namespace InventorySalesDashboard.Controllers
             return _context.Products.Any(e => e.Id == id);
         }
 
-        // Export JSON
+        // Export to Excel
+        public async Task<IActionResult> ExportToExcel()
+        {
+            var products = await _context.Products
+                .Include(p => p.Supplier)
+                .ToListAsync();
+
+            var excelBytes = _excelExportService.ExportProductsToExcel(products);
+            return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                $"Products_Export_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx");
+        }
+
+        // Export to JSON
         public async Task<IActionResult> ExportToJson()
         {
             var products = await _context.Products
@@ -253,13 +257,13 @@ namespace InventorySalesDashboard.Controllers
             return File(jsonBytes, "application/json", $"products_export_{DateTime.Now:yyyyMMdd_HHmmss}.json");
         }
 
-        // Import JSON - GET
+        // Import from JSON - GET
         public IActionResult ImportFromJson()
         {
             return View();
         }
 
-        // Import JSON - POST
+        // Import from JSON - POST
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ImportFromJson(IFormFile jsonFile, bool updateExisting = false)
@@ -272,11 +276,11 @@ namespace InventorySalesDashboard.Controllers
 
             try
             {
-                // Lire le contenu du fichier
+                // Read file content
                 using var stream = new StreamReader(jsonFile.OpenReadStream());
                 var jsonContent = await stream.ReadToEndAsync();
 
-                // Désérialiser les produits
+                // Deserialize products
                 var importedProducts = _jsonService.ImportProductsFromJson(jsonContent);
 
                 if (!importedProducts.Any())
@@ -289,32 +293,47 @@ namespace InventorySalesDashboard.Controllers
                 {
                     TotalProcessed = importedProducts.Count,
                     SuccessCount = 0,
+                    UpdatedCount = 0,
+                    SkippedCount = 0,
                     ErrorCount = 0,
                     Errors = new List<string>()
                 };
 
-                // Traiter chaque produit importé
+                // Process each imported product
                 foreach (var importedProduct in importedProducts)
                 {
                     try
                     {
-                        // Vérifier si le produit existe déjà
+                        // Check if product already exists
                         var existingProduct = await _context.Products
                             .FirstOrDefaultAsync(p => p.SKU == importedProduct.SKU);
 
                         if (existingProduct != null && updateExisting)
                         {
-                            // Mettre à jour le produit existant
+                            // Update existing product
                             existingProduct.Name = importedProduct.Name;
                             existingProduct.Price = importedProduct.Price;
                             existingProduct.CostPrice = importedProduct.CostPrice;
                             existingProduct.StockQuantity = importedProduct.StockQuantity;
                             existingProduct.ReorderLevel = importedProduct.ReorderLevel;
                             existingProduct.Description = importedProduct.Description;
-                            existingProduct.Category = importedProduct.Category;
-                            existingProduct.ImageUrl = importedProduct.ImageUrl;
+                            
+                            // Handle category
+                            if (!string.IsNullOrEmpty(importedProduct.CategoryName))
+                            {
+                                var category = await _context.Categories
+                                    .FirstOrDefaultAsync(c => c.Name == importedProduct.CategoryName);
 
-                            // Gérer le fournisseur
+                                if (category == null)
+                                {
+                                    category = new Category { Name = importedProduct.CategoryName, IsActive = true, CreatedDate = DateTime.Now };
+                                    _context.Categories.Add(category);
+                                    await _context.SaveChangesAsync();
+                                }
+                                existingProduct.CategoryId = category.Id;
+                            }
+
+                            // Handle supplier
                             if (!string.IsNullOrEmpty(importedProduct.SupplierName))
                             {
                                 var supplier = await _context.Suppliers
@@ -340,7 +359,7 @@ namespace InventorySalesDashboard.Controllers
                         }
                         else if (existingProduct == null)
                         {
-                            // Créer un nouveau produit
+                            // Create new product
                             var newProduct = new Product
                             {
                                 Name = importedProduct.Name,
@@ -350,11 +369,25 @@ namespace InventorySalesDashboard.Controllers
                                 StockQuantity = importedProduct.StockQuantity,
                                 ReorderLevel = importedProduct.ReorderLevel,
                                 Description = importedProduct.Description,
-                                Category = importedProduct.Category,
                                 ImageUrl = importedProduct.ImageUrl
                             };
 
-                            // Gérer le fournisseur
+                            // Handle category
+                            if (!string.IsNullOrEmpty(importedProduct.CategoryName))
+                            {
+                                var category = await _context.Categories
+                                    .FirstOrDefaultAsync(c => c.Name == importedProduct.CategoryName);
+
+                                if (category == null)
+                                {
+                                    category = new Category { Name = importedProduct.CategoryName, IsActive = true, CreatedDate = DateTime.Now };
+                                    _context.Categories.Add(category);
+                                    await _context.SaveChangesAsync();
+                                }
+                                newProduct.CategoryId = category.Id;
+                            }
+
+                            // Handle supplier
                             if (!string.IsNullOrEmpty(importedProduct.SupplierName))
                             {
                                 var supplier = await _context.Suppliers
@@ -380,7 +413,7 @@ namespace InventorySalesDashboard.Controllers
                         }
                         else
                         {
-                            // Produit existe mais updateExisting est false
+                            // Product exists but updateExisting is false
                             results.SkippedCount++;
                             results.Errors.Add($"Produit avec SKU '{importedProduct.SKU}' existe déjà. Non mis à jour.");
                         }
@@ -394,10 +427,7 @@ namespace InventorySalesDashboard.Controllers
                     }
                 }
 
-                // Sauvegarder les résultats
-                await _context.SaveChangesAsync();
-
-                // Passer les résultats à la vue
+                // Save results to TempData
                 TempData["ImportResults"] = JsonSerializer.Serialize(results);
                 TempData["SuccessMessage"] = $"Importation terminée! {results.SuccessCount} produits importés, {results.UpdatedCount} mis à jour, {results.SkippedCount} ignorés, {results.ErrorCount} erreurs.";
 
@@ -410,7 +440,7 @@ namespace InventorySalesDashboard.Controllers
             }
         }
 
-        // Résultats d'importation
+        // Import Results
         public IActionResult ImportResults()
         {
             if (TempData["ImportResults"] is string resultsJson)
@@ -421,6 +451,5 @@ namespace InventorySalesDashboard.Controllers
 
             return RedirectToAction(nameof(Index));
         }
-
     }
 }

@@ -82,9 +82,16 @@
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label asp-for="Category" class="form-label">Category</label>
-                            <input asp-for="Category" class="form-control" />
-                            <span asp-validation-for="Category" class="text-danger"></span>
+                            <label asp-for="CategoryId" class="form-label">Category</label>
+                            <select asp-for="CategoryId" class="form-select" asp-items="ViewBag.CategoryId">
+                                <option value="">-- Select Category --</option>
+                            </select>
+                            <span asp-validation-for="CategoryId" class="text-danger"></span>
+                            <small class="form-text text-muted">
+                                <a asp-controller="Categories" asp-action="Create" target="_blank" class="text-primary">
+                                    <i class="fas fa-plus me-1"></i>Add new category
+                                </a>
+                            </small>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label asp-for="SupplierId" class="form-label">Supplier</label>

@@ -2,7 +2,7 @@
 
 A comprehensive web-based system for managing inventory, tracking sales, and visualizing business performance. Built with ASP.NET Core 8.0 MVC.
 
-## 🚀 Features
+## Features
 
 - **Dashboard:** Real-time overview of key metrics like total revenue, profit, recent orders, and critical stock alerts.
 - **Inventory Management:** 
@@ -19,7 +19,7 @@ A comprehensive web-based system for managing inventory, tracking sales, and vis
 - **Real-time Updates:** Uses SignalR for live dashboard updates.
 - **API Support:** JSON API endpoints for Products and Orders integration.
 
-## 🛠️ Technology Stack
+## Technology Stack
 
 - **Framework:** ASP.NET Core 8.0 (MVC & Razor Pages)
 - **Database:** Entity Framework Core (SQL Server / SQLite supported)
@@ -33,12 +33,12 @@ A comprehensive web-based system for managing inventory, tracking sales, and vis
   - `SignalR` (Real-time Web Functionality)
   - `ASP.NET Core Identity` (Security)
 
-## 📋 Prerequisites
+## Prerequisites
 
 - [.NET 8.0 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
 - [SQL Server](https://www.microsoft.com/en-us/sql-server/sql-server-downloads) (or LocalDB / SQLite)
 
-## ⚙️ Installation & Setup
+## Installation & Setup
 
 1. **Clone the repository**
    ```bash
@@ -66,7 +66,7 @@ A comprehensive web-based system for managing inventory, tracking sales, and vis
    ```
    The application will likely start at `https://localhost:7152` or `http://localhost:5246` (check the console output).
 
-## 📧 Configuration
+## Configuration
 
 ### Email Settings
 To enable email features (like alerts), configure the SMTP settings in `appsettings.json`:
@@ -80,14 +80,10 @@ To enable email features (like alerts), configure the SMTP settings in `appsetti
 }
 ```
 
-## 🖥️ Usage
+## Usage
 
 1. **Register/Login:** Create an account to access the system.
 2. **Setup Data:** Start by adding **Categories** and **Suppliers**, then add **Products**.
 3. **Manage Orders:** Create new orders as sales occur.
 4. **Monitor Dashboard:** Watch the dashboard for real-time updates on sales and inventory status.
 5. **View Reports:** Navigate to the Reports section to analyze performance.
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.

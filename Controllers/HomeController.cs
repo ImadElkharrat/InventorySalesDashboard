@@ -1,6 +1,7 @@
-using System.Diagnostics;
+using DocumentFormat.OpenXml.Spreadsheet;
 using InventorySalesDashboard.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 
 namespace InventorySalesDashboard.Controllers
 {
@@ -15,7 +16,7 @@ namespace InventorySalesDashboard.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            return RedirectToAction("Index", "Dashboard");
         }
 
         public IActionResult Privacy()
